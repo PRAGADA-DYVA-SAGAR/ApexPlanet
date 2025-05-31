@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz & Joke</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: url("l.jpg");
+			background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; 
+            margin: 0;
+            padding: 20px; 
+            box-sizing: border-box;
+			
+        }
+
+        .quiz-container {
+            background-color: #b3f8fe; 
+            border-radius: 1.5rem; 
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); 
+            padding: 2.5rem; 
+            max-width: 600px; 
+            width: 100%; 
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; 
+        }
+
+        .tab-buttons {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+
+        .tab-buttons button {
+            background-color: #e2e8f0;
+            color: #2d3748;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            outline: none;
+        }
+
+        .tab-buttons button.active {
+            background-color: #4299e1;
+            color: white;
+            border-color: #4299e1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-buttons button:hover:not(.active) {
+            background-color: #cbd5e0;
+            transform: translateY(-2px);
+        }
+
+        .question-section h2 {
+            color: #1a202c; 
+            margin-bottom: 1.5rem;
+            font-size: 1.75rem;
+            line-height: 1.4;
+        }
+
+        .answer-buttons button {
+            background-color: #e2e8f0;
+            color: #2d3748; 
+            padding: 1rem 1.5rem; 
+            border-radius: 0.75rem; 
+            width: 100%;
+            font-size: 1.125rem; 
+            transition: all 0.3s ease; 
+            border: 2px solid transparent; 
+            outline: none; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .answer-buttons button:hover:not(.selected):not(.correct):not(.incorrect) {
+            background-color: #cbd5e0; 
+            transform: translateY(-2px); 
+        }
+
+        .answer-buttons button.selected {
+            background-color: #3182ce; 
+            color: white;
+            border-color: #3182ce;
+        }
+
+        .answer-buttons button.correct {
+            background-color: #48bb78; 
+            color: white;
+            border-color: #48bb78;
+        }
+
+        .answer-buttons button.incorrect {
+            background-color: #e53e3e;
+            color: white;
+            border-color: #e53e3e;
+        }
+
+        .answer-buttons button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .controls-section button {
+            background-color: #4299e1; 
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 0.75rem;
+            font-size: 1.25rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls-section button:hover {
+            background-color: #3182ce; 
+            transform: translateY(-1px);
+        }
+
+        .controls-section button:disabled {
+            background-color: #a0aec0; 
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .result-section h2 {
+            font-size: 2rem;
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+
+        .result-section p {
+            font-size: 1.25rem;
+            color: #4a5568;
+            margin-bottom: 2rem;
+        }
+
+        .joke-section {
+            padding: 2rem;
+            background-color: #f7fafc;
+            border-radius: 1rem;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .joke-text {
+            font-size: 1.5rem;
+            color: #2d3748;
+            min-height: 80px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .joke-section button {
+            background-color: #9f7aea; 
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 0.75rem;
+            font-size: 1.25rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .joke-section button:hover {
+            background-color: #805ad5;
+            transform: translateY(-1px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .quiz-container {
+                padding: 1.5rem;
+                border-radius: 1rem;
+            }
+            .question-section h2 {
+                font-size: 1.5rem;
+            }
+            .answer-buttons button {
+                font-size: 1rem;
+                padding: 0.8rem 1rem;
+            }
+            .controls-section button {
+                font-size: 1.1rem;
+                padding: 0.6rem 1.5rem;
+            }
+            .result-section h2 {
+                font-size: 1.75rem;
+            }
+            .result-section p {
+                font-size: 1.1rem;
+            }
+            .tab-buttons button {
+                font-size: 1rem;
+                padding: 0.6rem 1rem;
+            }
+            .joke-text {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div id="quiz-container" class="quiz-container">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Interactive Fun Hub</h1>
+
+        <div class="tab-buttons">
+            <button id="quiz-tab-button" class="active">Quiz</button>
+            <button id="joke-tab-button">Joke</button>
+        </div>
+
+        <div id="quiz-content">
+            <div id="question-section" class="question-section hidden">
+                <h2 id="question-text" class="text-2xl font-semibold text-gray-900 mb-6">Question goes here</h2>
+                <div id="answer-buttons" class="answer-buttons grid grid-cols-1 gap-4">
+                </div>
+            </div>
+
+            <div id="controls-section" class="controls-section flex justify-center mt-6">
+                <button id="next-button" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all duration-300 ease-in-out hidden">
+                    Next
+                </button>
+                <button id="start-button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all duration-300 ease-in-out">
+                    Start Quiz
+                </button>
+            </div>
+
+            <div id="result-section" class="result-section hidden">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Quiz Completed!</h2>
+                <p id="score-text" class="text-xl text-gray-700 mb-8">You scored X out of Y questions.</p>
+                <button id="play-again-button" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all duration-300 ease-in-out">
+                    Play Again
+                </button>
+            </div>
+        </div>
+
+        <div id="joke-content" class="joke-section hidden">
+            <p id="joke-text" class="joke-text">Click the button below to get a joke!</p>
+            <button id="new-joke-button">Tell Me a Joke!</button>
+        </div>
+    </div>
+<script>
+    // Array of quiz questions
+    const questions = [
+        {
+            question: "Which of the following is the correct file extension for Python files?",
+            options: [".pyt", ".py", ".pyn", ".ph"],
+            correctAnswer: ".py"
+        },
+        {
+            question: "What is the purpose of the print() function in Python?",
+            options: ["To read input from the user.", "To display output on the console.", "To perform mathematical calculations.", "To define a new variable."],
+            correctAnswer: "To display output on the console."
+        },
+        {
+            question: "Which of these is a comparison operator in Python?",
+            options: ["=", "+", "==", "*"],
+            correctAnswer: "=="
+        },
+        {
+            question: "What will be the value of x after x = 10 % 3?",
+            options: ["3", "1", "0", "10"],
+            correctAnswer: "1"
+        },
+        {
+            question: "How do you create an empty list named my_list?",
+            options: ["my_list = {}", "my_list = ()", "my_list = []", "my_list = new list()"],
+            correctAnswer: "my_list = []"
+        },
+        {
+            question: "Which keyword is used to exit from a loop or a function?",
+            options: ["stop", "break", "exit", "terminate"],
+            correctAnswer: "break"
+        },
+        {
+            question: "What does bool(0) return in Python?",
+            options: ["True", "False", "0", "None"],
+            correctAnswer: "False"
+        },
+        {
+            question: "How do you import a module named math into your Python script?",
+            options: ["include math", "require math", "import math", "use math"],
+            correctAnswer: "import math"
+        },
+        {
+            question: "Which data structure stores data in key-value pairs?",
+            options: ["List", "Tuple", "Set", "Dictionary"],
+            correctAnswer: "Dictionary"
+        },
+        {
+            question: "What is the result of \"hello\".upper()?",
+            options: ["hello", "HELLO", "Hello", "An error"],
+            correctAnswer: "HELLO"
+        }
+    ];
+
+    const jokes = [
+        "Why don't scientists trust atoms? Because they make up everything!",
+        "What do you call a fish with no eyes? Fsh!",
+        "Why did the scarecrow win an award? Because he was outstanding in his field!",
+        "I told my wife she was drawing her eyebrows too high. She looked surprised.",
+        "What do you call a fake noodle? An impasta!"
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let answerSelected = false; 
+
+    const quizContainer = document.getElementById('quiz-container');
+    const quizTabButton = document.getElementById('quiz-tab-button');
+    const jokeTabButton = document.getElementById('joke-tab-button');
+    const quizContent = document.getElementById('quiz-content');
+    const jokeContent = document.getElementById('joke-content');
+
+    const questionSection = document.getElementById('question-section');
+    const questionText = document.getElementById('question-text');
+    const answerButtonsContainer = document.getElementById('answer-buttons');
+    const nextButton = document.getElementById('next-button');
+    const startButton = document.getElementById('start-button');
+    const resultSection = document.getElementById('result-section');
+    const scoreText = document.getElementById('score-text');
+    const playAgainButton = document.getElementById('play-again-button');
+
+    const jokeText = document.getElementById('joke-text');
+    const newJokeButton = document.getElementById('new-joke-button');
+
+    function showContent(contentType) {
+        if (contentType === 'quiz') {
+            quizContent.classList.remove('hidden');
+            jokeContent.classList.add('hidden');
+            quizTabButton.classList.add('active');
+            jokeTabButton.classList.remove('active');
+          
+            if (currentQuestionIndex < questions.length && startButton.classList.contains('hidden')) {
+                questionSection.classList.remove('hidden');
+                nextButton.classList.remove('hidden');
+            } else if (resultSection.classList.contains('hidden')) {
+                startButton.classList.remove('hidden');
+            }
+        } else if (contentType === 'joke') {
+            quizContent.classList.add('hidden');
+            jokeContent.classList.remove('hidden');
+            quizTabButton.classList.remove('active');
+            jokeTabButton.classList.add('active');
+            
+            questionSection.classList.add('hidden');
+            nextButton.classList.add('hidden');
+            startButton.classList.add('hidden');
+            resultSection.classList.add('hidden');
+            jokeText.textContent = "Click the button below to get a joke!"; // Reset joke text
+        }
+    }
+
+    
+    function startQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        answerSelected = false;
+
+        startButton.classList.add('hidden');
+        resultSection.classList.add('hidden');
+        questionSection.classList.remove('hidden');
+        nextButton.classList.remove('hidden');
+        nextButton.disabled = true; 
+
+        displayQuestion();
+    }
+
+   
+    function displayQuestion() {
+        resetState(); 
+        answerSelected = false; 
+        nextButton.disabled = true; 
+
+        const currentQuestion = questions[currentQuestionIndex];
+        questionText.textContent = currentQuestion.question;
+
+       
+        currentQuestion.options.forEach(option => {
+            const button = document.createElement('button');
+            button.textContent = option;
+            button.classList.add('hover:bg-gray-300', 'focus:ring-2', 'focus:ring-blue-300', 'focus:ring-opacity-50'); 
+            button.addEventListener('click', () => selectAnswer(button, option));
+            answerButtonsContainer.appendChild(button);
+        });
+    }
+
+    
+    function resetState() {
+        nextButton.classList.add('hidden'); 
+        while (answerButtonsContainer.firstChild) {
+            answerButtonsContainer.removeChild(answerButtonsContainer.firstChild);
+        }
+    }
+
+    
+    function selectAnswer(selectedButton, selectedOption) {
+        if (answerSelected) return; 
+
+        answerSelected = true;
+        nextButton.disabled = false; 
+
+        const currentQuestion = questions[currentQuestionIndex];
+        const isCorrect = selectedOption === currentQuestion.correctAnswer;
+
+        
+        if (isCorrect) {
+            selectedButton.classList.add('correct');
+            score++;
+        } else {
+            selectedButton.classList.add('incorrect');
+            
+            Array.from(answerButtonsContainer.children).forEach(button => {
+                if (button.textContent === currentQuestion.correctAnswer) {
+                    button.classList.add('correct');
+                }
+            });
+        }
+
+        
+        Array.from(answerButtonsContainer.children).forEach(button => {
+            button.disabled = true;
+            if (button !== selectedButton) {
+                button.classList.add('opacity-70'); 
+            }
+        });
+
+        nextButton.classList.remove('hidden'); 
+    }
+
+    
+    function showNextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+            displayQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    
+    function showResults() {
+        questionSection.classList.add('hidden');
+        nextButton.classList.add('hidden');
+        resultSection.classList.remove('hidden');
+        scoreText.textContent = `You scored ${score} out of ${questions.length} questions!`;
+    }
+
+    function displayJoke() {
+        const randomIndex = Math.floor(Math.random() * jokes.length);
+        jokeText.textContent = jokes[randomIndex];
+    }
+
+    
+    quizTabButton.addEventListener('click', () => showContent('quiz'));
+    jokeTabButton.addEventListener('click', () => showContent('joke'));
+    startButton.addEventListener('click', startQuiz);
+    nextButton.addEventListener('click', showNextQuestion);
+    playAgainButton.addEventListener('click', startQuiz);
+    newJokeButton.addEventListener('click', displayJoke);
+
+    
+    showContent('quiz');
+
+    
+    questionSection.classList.add('hidden');
+    nextButton.classList.add('hidden');
+    resultSection.classList.add('hidden');
+    startButton.classList.remove('hidden');
+</script>
+</body>
+</html>
